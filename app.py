@@ -5,6 +5,7 @@ import secrets
 import os
 from datetime import datetime
 from typing import Any, Dict
+from dotenv import load_dotenv
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
 
@@ -13,6 +14,7 @@ app = Flask(__name__, static_folder='static', template_folder='templates')
 app.secret_key = os.environ.get("SECRET_KEY", secrets.token_hex(32))
 
 # -------------------- MONGO DB CONNECTION --------------------
+load_dotenv()  # Load variables from a local .env if present (dev convenience)
 class MockCollection:
     def __init__(self):
         self._data = []
@@ -54,7 +56,8 @@ class MockCollection:
 
 # -------------------- CONNECT TO REAL MONGO DB --------------------
 try:
-    MONGO_URI = os.environ.get("MONGO_URI")
+    # Support both names to avoid confusion across guides/platforms
+    MONGO_URI = os.environ.get("MONGO_URI") or os.environ.get("MONGODB_URI")
     client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
 
     # Test MongoDB connection
