@@ -312,7 +312,17 @@ def parent_dashboard():
     child = users.find_one({'email': child_email})
 
     if child:
-        return render_template('parent_dashboard.html', **child)
+        # Provide safe defaults for optional fields to avoid 500s in template
+        context = dict(child)
+        context['progress'] = child.get('progress', {})
+        context['grades'] = child.get('grades', {})
+        context['preprimary_progress'] = child.get('preprimary_progress', {})
+        context['completed_works'] = child.get('completed_works', [])
+        context['achievements'] = child.get('achievements', [])
+        context['feedback'] = child.get('feedback', [])
+        context['time_spent'] = child.get('time_spent', 0)
+        context['last_activity'] = child.get('last_activity', 'Never')
+        return render_template('parent_dashboard.html', **context)
 
     return "Child data not found"
 

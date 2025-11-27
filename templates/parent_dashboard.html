@@ -520,9 +520,15 @@
         <div class="quick-stat-item">
           <span class="quick-stat-icon">📈</span>
           <div class="quick-stat-number">
-            {% set total = 0 %} {% for pct in progress.values() %} {% set total
-            = total + pct %} {% endfor %} {{ "%.1f"|format(total /
-            progress|length) }}%
+            {% set p = progress or {} %}
+            {% set count = p|length %}
+            {% if count > 0 %}
+              {% set total = 0 %}
+              {% for pct in p.values() %}{% set total = total + (pct or 0) %}{% endfor %}
+              {{ "%.1f"|format(total / count) }}%
+            {% else %}
+              0.0%
+            {% endif %}
           </div>
           <div class="quick-stat-label">Avg Progress</div>
         </div>
@@ -580,7 +586,7 @@
 
         <div class="stat-card progress-section">
           <h3>Primary Subject Progress & Grades</h3>
-          {% for area, pct in progress.items() %}
+          {% for area, pct in (progress or {}).items() %}
           <div class="progress-item">
             <div class="progress-label">
               <span>{{ area }}</span>
@@ -600,7 +606,7 @@
           <h3>Pre-Primary Progress</h3>
           {% set sections = ['colors','animals','fruits','vegetables','numbers','strokes'] %}
           {% for sec in sections %}
-          {% set s = preprimary_progress.get(sec, {}) %}
+          {% set s = (preprimary_progress or {}).get(sec, {}) %}
           <div class="progress-item">
             <div class="progress-label">
               <span style="text-transform: capitalize;">{{ sec }}</span>
