@@ -496,7 +496,7 @@
       <div class="header">
         <h1>Student Work Dashboard</h1>
         <div class="child-info">
-          <div class="child-name">Monitoring: {{ child_name }}</div>
+          <div class="child-name">Monitoring: {{ child_name or child_email }}</div>
           <button
             class="logout-btn"
             onclick="window.location.href='/parent_logout'"

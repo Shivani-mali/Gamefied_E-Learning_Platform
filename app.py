@@ -322,6 +322,9 @@ def parent_dashboard():
         context['feedback'] = child.get('feedback', [])
         context['time_spent'] = child.get('time_spent', 0)
         context['last_activity'] = child.get('last_activity', 'Never')
+        # Name/email for header display
+        context['child_name'] = child.get('name') or session.get('child_name', 'Student')
+        context['child_email'] = child_email
         return render_template('parent_dashboard.html', **context)
 
     return "Child data not found"
