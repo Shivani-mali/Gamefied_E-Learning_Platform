@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>🎥 Fun Learning Quiz | Pre-Primary</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <style>
+    body {
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      background: url("{{ url_for('static', filename='images/3.png') }}") no-repeat center center fixed;
+      background-size: cover;
+      color: #333;
+      overflow-x: hidden;
+    }
+
+    h2 {
+      color: #ff4081;
+      text-shadow: 2px 2px #fff;
+      margin-top: 20px;
+    }
+
+    #player, iframe {
+      width: 100vw;
+      height: 100vh;
+      border: none;
+    }
+
+    .question-container {
+      display: none;
+      opacity: 0;
+      transform-origin: center;
+      transform: scale(0.8) rotateY(90deg);
+      transition: all 1.2s ease-in-out;
+    }
+
+    .question-container.show {
+      display: block;
+      opacity: 1;
+      transform: scale(1) rotateY(0deg);
+      animation: openBook 1.2s ease-in-out forwards;
+    }
+
+    @keyframes openBook {
+      0% { transform: rotateY(90deg) scale(0.8); opacity: 0; }
+      50% { transform: rotateY(45deg) scale(0.9); opacity: 0.7; }
+      100% { transform: rotateY(0deg) scale(1); opacity: 1; }
+    }
+
+    .question {
+      margin: 20px auto;
+      padding: 15px;
+      width: 60%;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 15px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      text-align: left;
+    }
+
+    button {
+      background: #ff4081;
+      color: white;
+      font-size: 18px;
+      padding: 10px 25px;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      margin-top: 15px;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #e91e63;
+      transform: scale(1.05);
+    }
+
+    .badge {
+      display: none;
+      margin-top: 30px;
+      animation: pop 1s ease;
+    }
+
+    .badge img {
+      width: 150px;
+      animation: bounce 1.5s infinite;
+    }
+
+    @keyframes pop {
+      0% { transform: scale(0.5); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
+    }
+
+    .back-btn {
+      background: linear-gradient(45deg, #ff66b2, #ff9966);
+      color: white;
+      font-weight: bold;
+      border: none;
+      border-radius: 25px;
+      padding: 12px 30px;
+      margin-top: 40px;
+      cursor: pointer;
+      transition: 0.3s ease;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+    }
+
+    .back-btn:hover {
+      transform: scale(1.1);
+      background: linear-gradient(45deg, #ff9966, #ff66b2);
+    }
+  </style>
+</head>
+<body>
+
+  <h2>🎥 Watch & Learn!</h2>
+  <div id="player"></div>
+
+  <!-- Questions Section -->
+  <div id="questions" class="question-container">
+    <h2>❓ Answer these fun questions</h2>
+
+    <div class="question">
+      <p>1. Popular game in India</p>
+      <p>1. भारतातील लोकप्रिय खेळ</p>
+      <input type="radio" name="q1" value="Cricket"> Cricket <br>
+      <input type="radio" name="q1" value="Football"> Football <br>
+      <input type="radio" name="q1" value="Hockey"> Hockey <br>
+    </div>
+
+    <div class="question">
+      <p>2. Black and white ball is played in which game?</p>
+      <p>2. कोणत्या खेळात काळा आणि पांढरा चेंडू खेळला जातो?</p>
+      <input type="radio" name="q2" value="Cricket"> Cricket <br>
+      <input type="radio" name="q2" value="Football"> Football <br>
+      <input type="radio" name="q2" value="Hockey"> Hockey <br>
+    </div>
+
+    <div class="question">
+      <p>3. Among these, which game was introduced by India?</p>
+      <p>3. यापैकी कोणता खेळ भारताने सादर केला आहे?</p>
+      <input type="radio" name="q3" value="Cricket"> Cricket <br>
+      <input type="radio" name="q3" value="Football"> Football <br>
+      <input type="radio" name="q3" value="Chess"> Chess <br>
+    </div>
+
+    <button onclick="checkAnswers()">Submit ✅</button>
+
+    <!-- Badge Display -->
+    <div class="badge" id="badge">
+      <h3 id="badge-text">Badge result will appear here</h3>
+      <img id="badge-img" src="{{ url_for('static', filename='images/badge.png') }}" alt="Badge">
+    </div>
+
+    <button class="back-btn nav-btn" data-target="{{ url_for('home') }}">
+      ⬅ Back to Home
+    </button>
+  </div>
+
+  <!-- Sounds -->
+  <audio id="correct-sound" src="{{ url_for('static', filename='audio/group_yay_cheer-101509.mp3') }}" preload="auto"></audio>
+  <audio id="wrong-sound" src="{{ url_for('static', filename='audio/oh_no.mp3') }}" preload="auto"></audio>
+
+  <!-- YouTube Player -->
+  <script src="https://www.youtube.com/iframe_api"></script>
+  <script>
+    let player;
+
+    function onYouTubeIframeAPIReady() {
+      player = new YT.Player('player', {
+        height: '100%',
+        width: '100%',
+        videoId: '8ggrPnxbvD4', // YouTube video ID
+        playerVars: { autoplay: 1, controls: 1, modestbranding: 1, fs: 1 },
+        events: { 'onStateChange': onPlayerStateChange }
+      });
+    }
+
+    function onPlayerStateChange(event) {
+      if (event.data === YT.PlayerState.ENDED) {
+        document.getElementById('player').style.display = 'none';
+        const q = document.getElementById('questions');
+        q.classList.add('show');
+      }
+    }
+
+    function checkAnswers() {
+      let score = 0;
+      const correct = { q1: "Cricket", q2: "Football", q3: "Chess" };
+
+      for (let q in correct) {
+        const options = document.getElementsByName(q);
+        for (let opt of options) {
+          if (opt.checked && opt.value === correct[q]) score++;
+        }
+      }
+
+      const badge = document.getElementById("badge");
+      const badgeText = document.getElementById("badge-text");
+      const badgeImg = document.getElementById("badge-img");
+      const correctSound = document.getElementById("correct-sound");
+      const wrongSound = document.getElementById("wrong-sound");
+
+      badge.style.display = "block";
+
+      if (score === 3) {
+        badgeText.innerText = "🏆 Gold Badge! Perfect Score!";
+        badgeImg.src = "{{ url_for('static', filename='images/badge.png') }}";
+        correctSound.play();
+      } else if (score === 2) {
+        badgeText.innerText = "🥈 Silver Badge! Great Job!";
+        badgeImg.src = "{{ url_for('static', filename='images/silver.png') }}";
+        correctSound.play();
+      } else if (score === 1) {
+        badgeText.innerText = "🥉 Bronze Badge! Keep Practicing!";
+        badgeImg.src = "{{ url_for('static', filename='images/bronze.png') }}";
+        correctSound.play();
+      } else {
+        badgeText.innerText = "❌ No Badge. Try Again!";
+        badgeImg.src = "{{ url_for('static', filename='images/oops.png') }}";
+        wrongSound.play();
+      }
+    }
+    // attach nav handlers for any nav-btns
+    document.querySelectorAll('.nav-btn[data-target]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const t = btn.getAttribute('data-target');
+        if (t) window.location.href = t;
+      });
+    });
+  </script>
+
+</body>
+</html>

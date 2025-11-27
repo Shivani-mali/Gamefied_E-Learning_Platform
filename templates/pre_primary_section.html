@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Pre-Primary Fun Learning | KidEdu</title>
+    <style>
+      /* 🌈 Animated top bar */
+      .top-bar {
+        width: 100%;
+        height: 8px;
+        background: linear-gradient(
+          90deg,
+          #ff4dc4,
+          #ff914d,
+          #ffe600,
+          #4dff91,
+          #4ddfff,
+          #b84dff
+        );
+        background-size: 400% 100%;
+        animation: flow 8s infinite linear;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 999;
+      }
+      @keyframes flow {
+        0% {
+          background-position: 0 0;
+        }
+        100% {
+          background-position: 400% 0;
+        }
+      }
+
+      /* 🌸 Page setup */
+      body {
+        margin: 0;
+        font-family: "Comic Sans MS", cursive;
+        color: #4a148c;
+        overflow-x: hidden;
+      }
+
+      #bg-video {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: -1;
+      }
+
+      h1 {
+        margin-top: 80px;
+        font-size: 2.3em;
+        text-align: center;
+        text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8);
+      }
+
+      p {
+        text-align: center;
+        font-size: 18px;
+        color: #333;
+      }
+
+      /* ✨ Scrollable section container */
+      .scroll-container {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        overflow-x: auto;
+        gap: 35px;
+        margin: 40px auto;
+        padding: 20px;
+        scroll-behavior: smooth;
+        width: 90%;
+      }
+
+      /* 🧁 Individual boxes */
+      .section-box {
+        flex: 0 0 auto;
+        text-align: center;
+        width: 220px;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 25px;
+        padding: 25px 20px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .section-box:hover {
+        transform: scale(1.1);
+        box-shadow: 0 6px 18px rgba(255, 128, 192, 0.4);
+      }
+
+      .logo {
+        font-size: 2.8em;
+        margin-bottom: 10px;
+      }
+
+      .section-box h2 a {
+        text-decoration: none;
+        color: #6a1b9a;
+        font-size: 1.4em;
+        font-weight: 700;
+      }
+
+      .section-box p {
+        color: #333;
+        font-size: 15px;
+        margin-top: 8px;
+      }
+
+      /* 💕 Scroll indicator bar */
+      .scroll-bar {
+        width: 0;
+        height: 6px;
+        background: linear-gradient(90deg, #ff80c0, #a066ff);
+        border-radius: 10px;
+        transition: width 0.2s;
+        margin: 10px auto;
+      }
+
+      /* 💫 Back button */
+      .logout-btn {
+        background: linear-gradient(45deg, #ff66b2, #ff9966);
+        color: white;
+        border: none;
+        border-radius: 25px;
+        padding: 12px 30px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+      }
+
+      .logout-btn:hover {
+        transform: scale(1.1);
+        background: linear-gradient(45deg, #ff9966, #ff66b2);
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- 🌈 Top line -->
+    <div class="top-bar"></div>
+
+    <!-- 🌳 Background -->
+    <video autoplay muted loop id="bg-video">
+      <source
+        src="{{ url_for('static', filename='video/kids_play.mp4') }}"
+        type="video/mp4"
+      />
+    </video>
+
+    <!-- 🧸 Main Content -->
+    <h1>👶 Welcome to Pre-Primary Fun Learning!</h1>
+    <p>Click on any section to start learning through fun!</p>
+
+    <div class="scroll-container">
+      <div class="section-box">
+        <div class="logo">✍️</div>
+        <h2><a href="{{ url_for('strokes') }}">Strokes</a></h2>
+        <p>Learn to draw lines and shapes!</p>
+      </div>
+
+      <div class="section-box">
+        <div class="logo">🎨</div>
+        <h2><a href="{{ url_for('colors') }}">Colors</a></h2>
+        <p>Red, Blue, Green...</p>
+      </div>
+
+      <div class="section-box">
+        <div class="logo">🐶</div>
+        <h2><a href="{{ url_for('animals') }}">Animals</a></h2>
+        <p>Cat, Dog, Elephant...</p>
+      </div>
+
+      <div class="section-box">
+        <div class="logo">🥕</div>
+        <h2><a href="{{ url_for('vegetables') }}">Vegetables</a></h2>
+        <p>Tomato, Carrot, Spinach...</p>
+      </div>
+
+      <div class="section-box">
+        <div class="logo">🍎</div>
+        <h2><a href="{{ url_for('fruits') }}">Fruits</a></h2>
+        <p>Apple, Mango, Banana...</p>
+      </div>
+
+      <div class="section-box">
+        <div class="logo">🔢</div>
+        <h2><a href="{{ url_for('numbers') }}">Numbers</a></h2>
+        <p>1, 2, 3, 4, 5...</p>
+      </div>
+    </div>
+
+    <!-- Scroll bar progress -->
+    <div class="scroll-bar"></div>
+
+    <!-- Back to Home -->
+    <div style="text-align: center; margin-top: 25px; margin-bottom: 30px">
+      <button id="back-btn" class="logout-btn nav-btn" data-target="{{ url_for('home') }}">
+        ⬅ Back to Home
+      </button>
+    </div>
+
+    <!-- Scroll Progress Script -->
+    <script>
+      const scrollContainer = document.querySelector(".scroll-container");
+      const scrollBar = document.querySelector(".scroll-bar");
+
+      scrollContainer.addEventListener("scroll", () => {
+        const scrollPercent =
+          scrollContainer.scrollLeft /
+          (scrollContainer.scrollWidth - scrollContainer.clientWidth);
+        scrollBar.style.width = scrollPercent * 100 + "%";
+      });
+    </script>
+
+    <script>
+      // Generic nav handler for buttons using data-target
+      document.querySelectorAll('.nav-btn[data-target]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const t = btn.getAttribute('data-target');
+          if (t) window.location.href = t;
+        });
+      });
+    </script>
+
+    <script src="https://cdn.botpress.cloud/webchat/v3.3/inject.js"></script>
+    <script
+      src="https://files.bpcontent.cloud/2025/10/24/08/20251024085310-C9Y0I83Y.js"
+      defer
+    ></script>
+  </body>
+</html>

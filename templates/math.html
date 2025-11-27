@@ -1,0 +1,268 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mathematics | Primary Learning</title>
+  <style>
+        body {
+            font-family: Georgia, 'Times New Roman', Times, serif;
+            text-align: center;
+            margin: 0;
+            padding: 40px;
+            background-color: #f4f1eb; /* Light cream background */
+            position: relative;
+            min-height: 100vh;
+        }
+
+        h2 {
+            color: #4a3c31; /* Dark brown color */
+            text-shadow: 1px 1px #fff;
+        }
+
+        iframe, #player {
+            width: 100vw;
+            height: 100vh;
+            border: none;
+        }
+
+        .question {
+            margin: 20px auto;
+            padding: 15px;
+            width: 60%;
+            background: rgba(255, 255, 255, 0.95); /* More opaque background */
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            text-align: left;
+            border-left: 5px solid #0056b3; /* Blue accent */
+        }
+        
+        .question p {
+            margin: 5px 0;
+        }
+
+        .question-container {
+            display: none;
+            opacity: 0;
+            transform-origin: center;
+            transform: scale(0.8) rotateY(90deg);
+            transition: all 1.2s ease-in-out;
+        }
+
+        .question-container.show {
+            display: block;
+            opacity: 1;
+            transform: scale(1) rotateY(0deg);
+            animation: openBook 1.2s ease-in-out forwards;
+        }
+
+        @keyframes openBook {
+            0% { transform: rotateY(90deg) scale(0.8); opacity: 0; }
+            50% { transform: rotateY(45deg) scale(0.9); opacity: 0.7; }
+            100% { transform: rotateY(0deg) scale(1); opacity: 1; }
+        }
+
+        button {
+            background: #007bff; /* Primary blue color */
+            color: white;
+            font-size: 18px;
+            font-family: Georgia, serif;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: 0.3s;
+        }
+
+        .submit-container {
+            display: flex;
+            justify-content: center;
+            margin: 40px 0;
+            bottom: 20px;
+            position: relative;
+        }
+
+        button:hover {
+            background: #0056b3; /* Darker blue */
+        }
+
+        .badge {
+            display: none;
+            margin-top: 30px;
+            animation: pop 1s ease;
+        }
+
+        .badge img {
+            width: 150px;
+            animation: bounce 1.5s infinite;
+        }
+
+        @keyframes pop {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+    </style>
+</head>
+<body>
+
+  
+    <h2>🎥 Watch & Learn!</h2>
+    <div id="player"></div>
+
+    <!-- Fallback if video fails to load -->
+    <div id="player-error" style="display:none; margin:20px auto; padding:18px; width:80%; max-width:900px; background: rgba(255,255,255,0.95); border-radius:8px; text-align:center;">
+        <h3>Video unavailable</h3>
+        <p>The video cannot be played here. <a href="https://youtube/UEL-KHbf5_0" target="_blank">Watch on YouTube</a></p>
+    </div>
+ 
+    <div id="questions" class="question-container">
+        <h2>❓ Mathematics Quiz</h2>
+    
+        <div class="question">
+            <p>1. What is 15 + 8?</p>
+            <p>15 + 8 = किती?</p>
+            <br>
+            <input type="radio" name="q1" value="21"> 21 <br>
+            <input type="radio" name="q1" value="22"> 22 <br>
+            <input type="radio" name="q1" value="23"> 23 <br>
+            <input type="radio" name="q1" value="24"> 24 <br>
+        </div>
+
+        <div class="question">
+            <p>2. What is 20 - 7?</p>
+            <p>20 - 7 = किती?</p>
+            <br>
+            <input type="radio" name="q2" value="12"> 12 <br>
+            <input type="radio" name="q2" value="13"> 13 <br>
+            <input type="radio" name="q2" value="14"> 14 <br>
+            <input type="radio" name="q2" value="15"> 15 <br>
+        </div>
+
+        <div class="question">
+            <p>3. How many sides does a square have?</p>
+            <p>चौरसाला किती बाजू असतात?</p>
+            <br>
+            <input type="radio" name="q3" value="3"> 3 <br>
+            <input type="radio" name="q3" value="4"> 4 <br>
+            <input type="radio" name="q3" value="5"> 5 <br>
+            <input type="radio" name="q3" value="6"> 6 <br>
+        </div>
+
+        <div class="question">
+            <p>4. What is 3 × 5?</p>
+            <p>3 × 5 = किती?</p>
+            <br>
+            <input type="radio" name="q4" value="12"> 12 <br>
+            <input type="radio" name="q4" value="13"> 13 <br>
+            <input type="radio" name="q4" value="15"> 15 <br>
+            <input type="radio" name="q4" value="18"> 18 <br>
+        </div>
+
+        <div class="submit-container">
+            <button onclick="checkAnswers()">Submit ✅</button>
+        </div>
+    </div>
+
+    <div class="badge" id="badge">
+        <h3 id="badge-text"><span style="position:absolute;left:-9999px;">Badge result will appear here</span></h3>
+        <img id="badge-img" src="{{ url_for('static', filename='images/badge.png') }}" alt="Badge">
+    </div>
+
+    <audio id="correct-sound" src="{{ url_for('static', filename='audio/yaayyy.mp3') }}" preload="auto"></audio>
+    <audio id="wrong-sound" src="{{ url_for('static', filename='audio/ohhno.mp3') }}" preload="auto"></audio>
+
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script>
+        let player;
+
+        // Create player
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player', {
+                height: '100%',
+                width: '100%',
+                videoId: 'UEL-KHbf5_0', 
+                playerVars: {
+                    'autoplay': 1,
+                    'mute': 1,
+                    'controls': 1,
+                    'modestbranding': 1,
+                    'fs': 1
+                },
+                events: {
+                    'onStateChange': onPlayerStateChange,
+                    'onError': onPlayerError
+                }
+            });
+        }
+
+        // When video ends
+        function onPlayerStateChange(event) {
+            if (event.data === YT.PlayerState.ENDED) {
+                document.getElementById('player').style.display = 'none';
+                const q = document.getElementById('questions');
+                q.classList.add('show');
+            }
+        }
+
+        function onPlayerError(event) {
+            // Hide player and show fallback link
+            document.getElementById('player').style.display = 'none';
+            const fallback = document.getElementById('player-error');
+            if (fallback) fallback.style.display = 'block';
+        }
+
+        function checkAnswers() {
+            let score = 0;
+            // Updated correct answers for the new questions
+            let correct = {
+                q1: "23",
+                q2: "13",
+                q3: "4",
+                q4: "15"
+            };
+
+            for (let q in correct) {
+                let options = document.getElementsByName(q);
+                for (let i = 0; i < options.length; i++) {
+                    if (options[i].checked && options[i].value === correct[q]) {
+                        score++;
+                    }
+                }
+            }
+
+            let badge = document.getElementById("badge");
+            let badgeText = document.getElementById("badge-text");
+            let badgeImg = document.getElementById("badge-img");
+            let correctSound = document.getElementById("correct-sound");
+            let wrongSound = document.getElementById("wrong-sound");
+
+            // Updated image paths to be relative
+            if (score === 4) {
+                badgeText.innerText = "🏆 Gold Badge! Perfect Score!";
+                badgeImg.src = "{{ url_for('static', filename='images/badge.png') }}";
+                correctSound.play();
+            } else if (score === 3) {
+                badgeText.innerText = "🥈 Silver Badge! Great Job!";
+                badgeImg.src = "{{ url_for('static', filename='images/silver.png') }}";
+                correctSound.play();
+            } else if (score === 2) {
+                badgeText.innerText = "🥉 Bronze Badge! Keep Practicing!";
+                badgeImg.src = "{{ url_for('static', filename='images/bronze.png') }}";
+                correctSound.play();
+            } else {
+                badgeText.innerText = "❌ No Badge. Try Again!";
+                badgeImg.src = "{{ url_for('static', filename='images/oops.png') }}";
+                wrongSound.play();
+            }
+
+            badge.style.display = "block";
+        }
+    </script>
+</body>
+</html>

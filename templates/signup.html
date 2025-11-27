@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>KidEdu - Signup</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap" rel="stylesheet" />
+</head>
+<body>
+      <!-- Fullscreen video background -->
+  <video autoplay muted loop id="bg-video">
+    <source src="{{ url_for('static', filename='video/kids_laugh.mp4') }}" type="video/mp4">
+  </video>
+  
+  <div class="login-wrapper">
+    <div class="login-box">
+      <h1>Create your <span>KidEdu</span> Account 🎉</h1>
+      <form action="{{ url_for('signup') }}" method="POST" class="login-form">
+        <input type="text" name="name" placeholder="🧒 Enter your name" required />
+        <input type="email" name="email" placeholder="📧 Enter your email" required />
+        <input type="tel" name="phone" placeholder="📱 Enter your phone number" required />
+        <input type="password" name="password" placeholder="🔐 Create a password" required />
+        <button type="submit">🎮 Sign Up!</button>
+      </form>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+                <div class="flash-messages">
+                  {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                  {% endfor %}
+                </div>
+              {% endif %}
+            {% endwith %}
+      <p class="signup-link">
+        Already have an account? <a href="{{ url_for('login') }}">Login here</a>
+      </p>
+    </div>
+  </div>
+</body>
+</html>

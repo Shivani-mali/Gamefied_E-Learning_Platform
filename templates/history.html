@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>History Video Quiz</title>
+    <style>
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            text-align: center;
+            margin: 0;
+            padding: 40px;
+            position: relative;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        #bg-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            min-width: 100vw;
+            min-height: 100vh;
+            width: auto;
+            height: auto;
+            z-index: -1;
+            object-fit: cover;
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+        h2 {
+            color: #fff;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.4);
+            font-size: 32px;
+            animation: fadeInDown 1s ease;
+        }
+
+        @keyframes fadeInDown {
+            0% { opacity: 0; transform: translateY(-30px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        iframe, #player {
+            width: 100vw;
+            height: 100vh;
+            border: none;
+        }
+
+        .question {
+            margin: 20px auto;
+            padding: 20px;
+            width: 60%;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            text-align: left;
+            border-left: 6px solid #667eea;
+            transition: transform 0.3s ease;
+        }
+
+        .question:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.4);
+        }
+        
+        .question p {
+            margin: 8px 0;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .question input[type="radio"] {
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .question-container {
+            display: none;
+            opacity: 0;
+            transform-origin: center;
+            transform: scale(0.8) rotateY(90deg);
+            transition: all 1.2s ease-in-out;
+        }
+
+        .question-container.show {
+            display: block;
+            opacity: 1;
+            transform: scale(1) rotateY(0deg);
+            animation: openBook 1.2s ease-in-out forwards;
+        }
+
+        @keyframes openBook {
+            0% { transform: rotateY(90deg) scale(0.8); opacity: 0; }
+            50% { transform: rotateY(45deg) scale(0.9); opacity: 0.7; }
+            100% { transform: rotateY(0deg) scale(1); opacity: 1; }
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-size: 20px;
+            font-family: Georgia, serif;
+            padding: 15px 35px;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .submit-container {
+            display: flex;
+            justify-content: center;
+            margin: 40px 0;
+            bottom: 20px;
+            position: relative;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .badge {
+            display: none;
+            margin-top: 30px;
+            animation: pop 1s ease;
+        }
+
+        .badge img {
+            width: 180px;
+            animation: bounce 1.5s infinite;
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3));
+        }
+
+        .badge h3 {
+            color: #fff;
+            font-size: 28px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        @keyframes pop {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+    </style>
+</head>
+<body>
+
+    <video id="bg-video" autoplay loop muted playsinline>
+        <source src="{{ url_for('static', filename='video/bg.mp4') }}" type="video/mp4">
+    </video>
+  
+    <h2>🎥 Watch & Learn Ancient History!</h2>
+    <div id="player"></div>
+
+    <!-- Fallback if video fails to load -->
+    <div id="player-error" style="display:none; margin:20px auto; padding:18px; width:80%; max-width:900px; background: rgba(255,255,255,0.95); border-radius:8px; text-align:center;">
+        <h3>Video unavailable</h3>
+        <p>The video cannot be played here. <a href="https://youtu.be/pFK9nC6iD6I" target="_blank">Watch on YouTube</a></p>
+    </div>
+ 
+    <div id="questions" class="question-container">
+        <h2>❓ Ancient History Quiz</h2>
+    
+        <div class="question">
+            <p>1. According to the video, which event marks the beginning of the Ancient Age?</p>
+            <p>व्हिडिओनुसार, प्राचीन युगाची सुरुवात कोणत्या घटनेने झाली?</p>
+            <br>
+            <input type="radio" name="q1" value="The appearance of writing (लिपी/लेखणीचा उदय)"> The appearance of writing (लिपी/लेखणीचा उदय) <br>
+            <input type="radio" name="q1" value="The invention of fire (आगीचा शोध)"> The invention of fire (आगीचा शोध) <br>
+            <input type="radio" name="q1" value="The fall of Rome (रोमचे पतन)"> The fall of Rome (रोमचे पतन) <br>
+            <input type="radio" name="q1" value="The discovery of iron (लोखंडाचा शोध)"> The discovery of iron (लोखंडाचा शोध) <br>
+        </div>
+
+        <div class="question">
+            <p>2. Which civilization is famous for Pyramids and Pharaohs?</p>
+            <p>पिरॅमिड आणि फॅरो (Pharaohs) साठी कोणती संस्कृती प्रसिद्ध आहे?</p>
+            <br>
+            <input type="radio" name="q2" value="Greece (ग्रीस)"> Greece (ग्रीस) <br>
+            <input type="radio" name="q2" value="Egypt (इजिप्त)"> Egypt (इजिप्त) <br>
+            <input type="radio" name="q2" value="Rome (रोम)"> Rome (रोम) <br>
+            <input type="radio" name="q2" value="China (चीन)"> China (चीन) <br>
+        </div>
+
+        <div class="question">
+            <p>3. What is Greece famous for according to the video?</p>
+            <p>व्हिडिओनुसार, ग्रीस कशासाठी प्रसिद्ध आहे?</p>
+            <br>
+            <input type="radio" name="q3" value="Wise Philosophers and Olympics (ज्ञानी तत्वज्ञ आणि ऑलिम्पिक)"> Wise Philosophers and Olympics (ज्ञानी तत्वज्ञ आणि ऑलिम्पिक) <br>
+            <input type="radio" name="q3" value="Ninja Warriors (निन्जा योद्धे)"> Ninja Warriors (निन्जा योद्धे) <br>
+            <input type="radio" name="q3" value="Building the Great Wall (ग्रेट वॉल बांधण्यासाठी)"> Building the Great Wall (ग्रेट वॉल बांधण्यासाठी) <br>
+            <input type="radio" name="q3" value="Steam Engines (वाफेची इंजिने)"> Steam Engines (वाफेची इंजिने) <br>
+        </div>
+
+        <div class="question">
+            <p>4. Into which two groups was the population divided?</p>
+            <p>लोकसंख्या कोणत्या दोन गटात विभागली गेली होती?</p>
+            <br>
+            <input type="radio" name="q4" value="Free men and Slaves (स्वतंत्र नागरिक आणि गुलाम)"> Free men and Slaves (स्वतंत्र नागरिक आणि गुलाम) <br>
+            <input type="radio" name="q4" value="Rich and Poor (श्रीमंत आणि गरीब)"> Rich and Poor (श्रीमंत आणि गरीब) <br>
+            <input type="radio" name="q4" value="Soldiers and Farmers (सैनिक आणि शेतकरी)"> Soldiers and Farmers (सैनिक आणि शेतकरी) <br>
+            <input type="radio" name="q4" value="Kings and Queens (राजे आणि राण्या)"> Kings and Queens (राजे आणि राण्या) <br>
+        </div>
+
+        <div class="question">
+            <p>5. Where did the Gladiators fight?</p>
+            <p>ग्लॅडिएटर्स (लढवय्ये) कुठे लढत असत?</p>
+            <br>
+            <input type="radio" name="q5" value="In Theaters and Circuses in Rome (रोममधील थिएटर आणि सर्कसमध्ये)"> In Theaters and Circuses in Rome (रोममधील थिएटर आणि सर्कसमध्ये) <br>
+            <input type="radio" name="q5" value="In the Pyramids (पिरॅमिडमध्ये)"> In the Pyramids (पिरॅमिडमध्ये) <br>
+            <input type="radio" name="q5" value="In the Acropolis (अ‍ॅक्रोपोलिसमध्ये)"> In the Acropolis (अ‍ॅक्रोपोलिसमध्ये) <br>
+            <input type="radio" name="q5" value="In the Ocean (महासागरात)"> In the Ocean (महासागरात) <br>
+        </div>
+
+        <div class="question">
+            <p>6. Which event marks the END of the Ancient Age?</p>
+            <p>कोणत्या घटनेने प्राचीन युगाचा अंत होतो?</p>
+            <br>
+            <input type="radio" name="q6" value="The Fall of the Roman Empire (रोमन साम्राज्याचे पतन)"> The Fall of the Roman Empire (रोमन साम्राज्याचे पतन) <br>
+            <input type="radio" name="q6" value="The invention of the Computer (संगणकाचा शोध)"> The invention of the Computer (संगणकाचा शोध) <br>
+            <input type="radio" name="q6" value="Discovery of America (अमेरिकेचा शोध)"> Discovery of America (अमेरिकेचा शोध) <br>
+            <input type="radio" name="q6" value="World War I (पहिले महायुद्ध)"> World War I (पहिले महायुद्ध) <br>
+        </div>
+
+        <div class="submit-container">
+            <button onclick="checkAnswers()">Submit ✅</button>
+        </div>
+    </div>
+
+    <div class="badge" id="badge">
+        <h3 id="badge-text"><span style="position:absolute;left:-9999px;">Badge result will appear here</span></h3>
+        <img id="badge-img" src="{{ url_for('static', filename='images/badge.png') }}" alt="Badge">
+    </div>
+
+    <audio id="correct-sound" src="{{ url_for('static', filename='audio/yaayyy.mp3') }}" preload="auto"></audio>
+    <audio id="wrong-sound" src="{{ url_for('static', filename='audio/ohhno.mp3') }}" preload="auto"></audio>
+
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script>
+        let player;
+
+        // Create player
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player', {
+                height: '100%',
+                width: '100%',
+                videoId: 'pFK9nC6iD6I', 
+                playerVars: {
+                    'autoplay': 1,
+                    'mute': 1,
+                    'controls': 1,
+                    'modestbranding': 1,
+                    'fs': 1
+                },
+                events: {
+                    'onStateChange': onPlayerStateChange,
+                    'onError': onPlayerError
+                }
+            });
+        }
+
+        // When video ends
+        function onPlayerStateChange(event) {
+            if (event.data === YT.PlayerState.ENDED) {
+                document.getElementById('player').style.display = 'none';
+                const q = document.getElementById('questions');
+                q.classList.add('show');
+            }
+        }
+
+        function onPlayerError(event) {
+            // Hide player and show fallback link
+            document.getElementById('player').style.display = 'none';
+            const fallback = document.getElementById('player-error');
+            if (fallback) fallback.style.display = 'block';
+        }
+
+        function checkAnswers() {
+            let score = 0;
+            // Updated correct answers for Ancient History
+            let correct = {
+                q1: "The appearance of writing (लिपी/लेखणीचा उदय)",
+                q2: "Egypt (इजिप्त)",
+                q3: "Wise Philosophers and Olympics (ज्ञानी तत्वज्ञ आणि ऑलिम्पिक)",
+                q4: "Free men and Slaves (स्वतंत्र नागरिक आणि गुलाम)",
+                q5: "In Theaters and Circuses in Rome (रोममधील थिएटर आणि सर्कसमध्ये)",
+                q6: "The Fall of the Roman Empire (रोमन साम्राज्याचे पतन)"
+            };
+
+            for (let q in correct) {
+                let options = document.getElementsByName(q);
+                for (let i = 0; i < options.length; i++) {
+                    if (options[i].checked && options[i].value === correct[q]) {
+                        score++;
+                    }
+                }
+            }
+
+            let badge = document.getElementById("badge");
+            let badgeText = document.getElementById("badge-text");
+            let badgeImg = document.getElementById("badge-img");
+            let correctSound = document.getElementById("correct-sound");
+            let wrongSound = document.getElementById("wrong-sound");
+
+            // Updated image paths to be relative
+            if (score === 6) {
+                badgeText.innerText = "🏆 Gold Badge! Perfect Score!";
+                badgeImg.src = "{{ url_for('static', filename='images/badge.png') }}";
+                correctSound.play();
+            } else if (score >= 4) {
+                badgeText.innerText = "🥈 Silver Badge! Great Job!";
+                badgeImg.src = "{{ url_for('static', filename='images/silver.png') }}";
+                correctSound.play();
+            } else if (score >= 3) {
+                badgeText.innerText = "🥉 Bronze Badge! Keep Practicing!";
+                badgeImg.src = "{{ url_for('static', filename='images/bronze.png') }}";
+                correctSound.play();
+            } else {
+                badgeText.innerText = "❌ No Badge. Try Again!";
+                badgeImg.src = "{{ url_for('static', filename='images/oops.png') }}";
+                wrongSound.play();
+            }
+
+            badge.style.display = "block";
+        }
+    </script>
+</body>
+</html>

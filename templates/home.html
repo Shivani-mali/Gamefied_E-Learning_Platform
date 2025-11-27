@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>🌈 Welcome to Learning Fun! 🌟</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* 🌈 Animated top bar */
+        .top-bar {
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(
+                90deg,
+                #ff4dc4,
+                #ff914d,
+                #ffe600,
+                #4dff91,
+                #4ddfff,
+                #b84dff
+            );
+            background-size: 400% 100%;
+            animation: flow 8s infinite linear;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 999;
+        }
+        @keyframes flow {
+            0% { background-position: 0 0; }
+            100% { background-position: 400% 0; }
+        }
+
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            text-align: center;
+            color: #333;
+            overflow: hidden;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        /* 🎥 Background Video */
+        .bg-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+            opacity: 0.9;
+            filter: brightness(0.95);
+        }
+
+        /* 🌈 Title Styling */
+        h1 {
+            color: #ff4081;
+            font-size: 3em;
+            margin: 80px 0 40px;
+            text-shadow: 2px 2px 6px rgba(255, 255, 255, 0.95);
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            color: #6a1b9a;
+            margin-bottom: 60px;
+            text-shadow: 1px 1px 3px rgba(255, 255, 255, 0.8);
+        }
+
+        /* 📚 Section Container */
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 80px;
+            flex-wrap: wrap;
+            margin-bottom: 50px;
+        }
+
+        .section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            position: relative;
+        }
+
+        .section:hover {
+            transform: scale(1.08);
+            box-shadow: 0 0 30px rgba(255, 105, 180, 0.6);
+        }
+
+        .section img {
+            width: 270px;
+            height: 260px;
+            border-radius: 25px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+            border: 4px solid #fff;
+            background: #fff;
+            margin-bottom: 15px;
+        }
+
+        .section-name {
+            font-size: 1.6em;
+            font-weight: bold;
+            color: #6a1b9a;
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 20px;
+            border-radius: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 💕 Buttons */
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #ff66b2, #ff9966);
+            color: white;
+            font-weight: bold;
+            border: none;
+            border-radius: 30px;
+            padding: 14px 35px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn:hover {
+            transform: scale(1.1);
+            background: linear-gradient(45deg, #ff9966, #ff66b2);
+        }
+
+        /* 🎯 Floating Parent Dashboard Button */
+        .parent-float-btn {
+            position: fixed;
+            bottom: 120px;
+            right: 30px;
+            background: linear-gradient(45deg, #ff66b2, #ff9966);
+            color: #fff;
+            border: none;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            font-size: 25px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 9999;
+        }
+
+        .parent-float-btn:hover {
+            transform: scale(1.15);
+            background: linear-gradient(45deg, #ff9966, #ff66b2);
+        }
+
+        .parent-float-btn::after {
+            content: "👨‍👩‍👧";
+        }
+
+        footer {
+            font-size: 17px;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.4);
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+            display: inline-block;
+            padding: 10px 25px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+        }
+
+        /* 📱 Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.2em;
+            }
+
+            .container {
+                flex-direction: column;
+                gap: 40px;
+            }
+
+            .section img {
+                width: 230px;
+                height: 230px;
+            }
+
+            .btn {
+                font-size: 1rem;
+                padding: 12px 25px;
+            }
+
+            .parent-float-btn {
+                width: 60px;
+                height: 60px;
+                bottom: 110px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Top line -->
+    <div class="top-bar"></div>
+
+    <!-- 🎥 Background Video -->
+    <video autoplay muted loop class="bg-video">
+        <source src="{{ url_for('static', filename='video/thenew.mp4') }}" type="video/mp4">
+        Your browser does not support HTML5 video.
+    </video>
+
+    <!-- 🌈 Header -->
+    <h1>🌈 Welcome to Learning Fun! 🌟</h1>
+    <p class="subtitle">Choose your learning adventure and start exploring!</p>
+
+    <!-- 📚 Learning Sections -->
+    <div class="container">
+        <a href="{{ url_for('pre_primary') }}" class="section">
+            <img src="{{ url_for('static', filename='images/Pre-primary.jpg') }}" alt="Pre-Primary">
+            <div class="section-name">Pre-Primary</div>
+        </a>
+
+        <a href="{{ url_for('primary') }}" class="section">
+            <img src="{{ url_for('static', filename='images/primary.jpg') }}" alt="Primary">
+            <div class="section-name">Primary</div>
+        </a>
+    </div>
+
+    <!-- 🎮 Buttons -->
+    <div class="button-container">
+        <button class="btn nav-btn" data-target="{{ url_for('login') }}">
+                ⬅ Back to Login
+        </button>
+    </div>
+
+    <!-- 👨‍👩‍👧 Floating Parent Dashboard Button -->
+    <button class="parent-float-btn" onclick="window.location.href='/parent_login'" title="Parent Dashboard"></button>
+
+        <!-- 💬 Chatbot -->
+        <script src="https://cdn.botpress.cloud/webchat/v3.3/inject.js"></script>
+        <script src="https://files.bpcontent.cloud/2025/10/24/08/20251024085310-C9Y0I83Y.js" defer></script>
+
+        <script>
+            // Attach navigation handlers for buttons that use data-target
+            document.querySelectorAll('.nav-btn[data-target]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const t = btn.getAttribute('data-target');
+                    if (t) window.location.href = t;
+                });
+            });
+        </script>
+
+</body>
+</html>

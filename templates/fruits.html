@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fun Video Quiz for Kids</title>
+    <style>
+     body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 40px;
+            /* Optional: make sure body position is relative so we can layer the video */
+            position: relative;
+            min-height: 100vh;
+        }
+
+        #bg-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            min-width: 100vw;
+            min-height: 100vh;
+            width: auto;
+            height: auto;
+            z-index: -1;
+            object-fit: cover;
+            opacity: 0.6; /* adjust for desired brightness */
+            pointer-events: none; /* so clicks go "through" the video */
+        }
+
+        h2 {
+            color: #ff4081;
+            text-shadow: 2px 2px #fff;
+        }
+
+        iframe, #player {
+            width: 100vw;
+            height: 100vh;
+            border: none;
+        }
+
+        .question {
+            margin: 20px auto;
+            padding: 15px;
+            width: 60%;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            text-align: left;
+        }
+
+        .question-container {
+            display: none;
+            opacity: 0;
+            transform-origin: center;
+            transform: scale(0.8) rotateY(90deg);
+            transition: all 1.2s ease-in-out;
+        }
+
+
+        .question-container.show {
+            display: block;
+            opacity: 1;
+            transform: scale(1) rotateY(0deg);
+            animation: openBook 1.2s ease-in-out forwards;
+        }
+        
+        @keyframes openBook {
+            0% { transform: rotateY(90deg) scale(0.8); opacity: 0; }
+            50% { transform: rotateY(45deg) scale(0.9); opacity: 0.7; }
+            100% { transform: rotateY(0deg) scale(1); opacity: 1; }
+        }
+
+        /* Submit button container positioned at the bottom center */
+        .submit-container {
+            display: flex;
+            justify-content: center;
+            margin: 40px 0;
+            bottom: 20px;
+            position: relative;
+        }
+
+        button {
+            background: #ff4081;
+            color: white;
+            font-size: 18px;
+            padding: 10px 25px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #e91e63;
+        }
+
+        .badge {
+            display: none;
+            margin-top: 30px;
+            animation: pop 1s ease;
+        }
+
+        .badge img {
+            width: 150px;
+            animation: bounce 1.5s infinite;
+        }
+
+        @keyframes pop {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        /* Game Styles */
+        .game-card {
+            margin: 30px auto;
+            padding: 25px;
+            width: 80%;
+            max-width: 700px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.3);
+        }
+
+        .game-card h3 {
+            color: #ff4081;
+            margin-bottom: 15px;
+            font-size: 28px;
+        }
+
+        .fruit-catch {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+
+        .fruit-btn {
+            width: 120px;
+            height: 160px;
+            background: white;
+            border: 4px solid #4CAF50;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+               gap: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            padding: 10px 5px;
+               text-align: center;
+        }
+        
+           .fruit-btn > *:first-child {
+               font-size: 50px;
+               line-height: 1;
+           }
+
+           .fruit-btn > *:last-child {
+               font-size: 16px;
+               font-weight: bold;
+               color: #333;
+               margin: 0;
+        }
+
+        .fruit-btn:hover {
+            transform: scale(1.15) translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        .fruit-btn.caught {
+            animation: jump 0.5s ease;
+            border-color: gold;
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+        }
+
+        @keyframes jump {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-30px) scale(1.2); }
+        }
+
+        .basket-game {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+
+        .fruit-item {
+            width: 90px;
+            height: 90px;
+            background: white;
+            border: 3px solid #333;
+            border-radius: 15px;
+            font-size: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .fruit-item:hover {
+            transform: scale(1.2);
+        }
+
+        .fruit-item.picked {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Fullscreen video background -->
+  <video autoplay muted loop id="bg-video">
+    <source src="{{ url_for('static', filename='video/kids_play.mp4') }}" type="video/mp4">
+  </video>
+
+   <!-- 1. YouTube Video -->
+    <h2>🎥 Watch & Learn!</h2>
+        <!-- YouTube Player -->
+    <div id="player"></div>
+  
+
+    <!-- Games Section (appears after video) -->
+    <div id="games" class="question-container">
+        <h2>🎮 Let's Play Fruit Games!</h2>
+        
+        <!-- Game 1: Catch the Fruits -->
+        <div class="game-card">
+            <h3>🍎 Catch the Fruits!</h3>
+            <p id="fruitInstruction" style="font-size: 24px; font-weight: bold;">Click on the APPLE! 🍎</p>
+            <div class="fruit-catch">
+                   <div class="fruit-btn" onclick="catchFruit('apple', this)"><span>🍎</span><span>Apple</span></div>
+                   <div class="fruit-btn" onclick="catchFruit('banana', this)"><span>🍌</span><span>Banana</span></div>
+                   <div class="fruit-btn" onclick="catchFruit('grapes', this)"><span>🍇</span><span>Grapes</span></div>
+                   <div class="fruit-btn" onclick="catchFruit('mango', this)"><span>🥭</span><span>Mango</span></div>
+            </div>
+            <p id="fruitScore" style="font-size: 26px; color: green; font-weight: bold;">Score: 0 ⭐</p>
+        </div>
+
+        <!-- Game 2: Fruit Basket -->
+        <div class="game-card">
+            <h3>🧺 Fill the Fruit Basket!</h3>
+            <p style="font-size: 20px;">Click fruits to add them to your basket! 🍓</p>
+            <div class="basket-game">
+                <div class="fruit-item" onclick="addToBasket(this)">🍊</div>
+                <div class="fruit-item" onclick="addToBasket(this)">🍉</div>
+                <div class="fruit-item" onclick="addToBasket(this)">🍓</div>
+                <div class="fruit-item" onclick="addToBasket(this)">🍑</div>
+                <div class="fruit-item" onclick="addToBasket(this)">🍍</div>
+                <div class="fruit-item" onclick="addToBasket(this)">🥝</div>
+            </div>
+            <div id="basket" style="font-size: 60px; margin: 20px; min-height: 100px; background: rgba(139, 69, 19, 0.3); border: 5px dashed #8B4513; border-radius: 20px; padding: 20px;">
+                🧺
+            </div>
+            <p id="basketCount" style="font-size: 22px; color: #8B4513; font-weight: bold;">Fruits in basket: 0</p>
+        </div>
+
+        <!-- Game 3: Find the Fruit -->
+        <div class="game-card">
+            <h3>🧩 Find the Fruit!</h3>
+            <p id="findFruitInstruction" style="font-size:22px; font-weight:bold;">Tap the APPLE! 🍎</p>
+            <div style="display:flex; justify-content:center; gap:18px; margin:20px 0; flex-wrap:wrap;">
+                   <div class="fruit-btn" onclick="chooseFruit('apple', this)"><span>🍎</span><span>Apple</span></div>
+                   <div class="fruit-btn" onclick="chooseFruit('banana', this)"><span>🍌</span><span>Banana</span></div>
+                   <div class="fruit-btn" onclick="chooseFruit('grapes', this)"><span>🍇</span><span>Grapes</span></div>
+            </div>
+            <p id="findFruitMsg" style="font-size:22px; color: purple; font-weight:bold;"></p>
+        </div>
+
+        <button onclick="showQuiz()" style="margin-top: 20px; font-size: 20px; padding: 12px 32px;">Continue to Quiz 📝</button>
+    </div>
+
+    <!-- Questions (hidden initially) -->
+    <div id="questions" class="question-container">
+        <h2>❓ Answer these fun questions about Fruits</h2>
+
+    <div class="question">
+        <p>1. Which fruit is yellow and curved?</p>
+        <p> कौन सा फल पीला और मुड़ा हुआ है?</p>
+        <input type="radio" name="q1" value="Banana"> Banana (केला) <br>
+        <input type="radio" name="q1" value="Apple"> Apple (सेब) <br>
+        <input type="radio" name="q1" value="Orange"> Orange (संतरा) <br>
+    </div>
+
+    <div class="question">
+        <p>2. Which fruit is red and round?</p>
+        <p> कौन सा फल लाल और गोल है?</p>
+        <input type="radio" name="q2" value="Apple"> Apple (सेब) <br>
+        <input type="radio" name="q2" value="Banana"> Banana (केला) <br>
+        <input type="radio" name="q2" value="Grapes"> Grapes (अंगूर) <br>
+    </div>
+
+    <div class="question">
+        <p>3. Which fruit grows in bunches?</p>
+        <p> कौन सा फल गुच्छों में उगता है?</p>
+        <input type="radio" name="q3" value="Grapes"> Grapes (अंगूर) <br>
+        <input type="radio" name="q3" value="Mango"> Mango (आम) <br>
+        <input type="radio" name="q3" value="Orange"> Orange (संतरा) <br>
+    </div>
+
+    <div class="question">
+        <p>4. Which fruit is sweet and juicy?</p>
+        <p> कौन सा फल मीठा और रसदार है?</p>
+        <input type="radio" name="q4" value="Mango"> Mango (आम) <br>
+        <input type="radio" name="q4" value="Apple"> Apple (सेब) <br>
+        <input type="radio" name="q4" value="Banana"> Banana (केला) <br>
+    </div>
+
+    <!-- Fixed submit button in center after questions -->
+    <div class="submit-container">
+        <button onclick="checkAnswers()">Submit ✅</button>
+    </div>
+
+    <div class="badge" id="badge">
+        <h3 id="badge-text"><span style="position:absolute;left:-9999px;">Badge result will appear here</span></h3>
+        <img id="badge-img" src="{{ url_for('static', filename='images/badge.png') }}" alt="Badge">
+    </div>
+
+    <audio id="correct-sound" src="{{ url_for('static', filename='audio/yaayyy.mp3') }}" preload="auto"></audio>
+    <audio id="wrong-sound" src="{{ url_for('static', filename='audio/ohhno.mp3') }}" preload="auto"></audio>
+
+      <!-- YouTube IFrame API -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script>
+        let player;
+
+        // Progress helper for Pre-Primary (Fruits)
+        function sendProgress(payload){
+            try {
+                fetch('/preprimary/progress/update', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(Object.assign({ section: 'fruits' }, payload))
+                });
+            } catch(e) { /* ignore */ }
+        }
+
+        // Create player
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player', {
+                height: '100%',
+                width: '100%',
+                videoId: 'OAtev9ZG8qE',  // eg :src="https://www.youtube.com/embed/bBVKIUc1tfY?si=Pfk-BrbUnnpdqygO" id is between  embed/ and ?
+                playerVars: {
+                    'autoplay': 1,
+                    'controls': 1,
+                    'modestbranding': 1,
+                    'fs': 1
+                },
+                events: {
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        }
+
+        // When video ends
+        function onPlayerStateChange(event) {
+            if (event.data === YT.PlayerState.ENDED) {
+                document.getElementById('player').style.display = 'none';
+                const g = document.getElementById('games');
+                g.classList.add('show');
+                startFruitGame();
+                startFindFruitGame();
+                sendProgress({ video_watched: true });
+            }
+        }
+
+        // Show quiz after games (manual continue)
+        function showQuiz() {
+            document.getElementById('games').style.display = 'none';
+            const q = document.getElementById('questions');
+            q.classList.add('show');
+        }
+
+        // Catch the Fruits Game
+        const fruits = ['apple', 'banana', 'grapes', 'mango'];
+        const fruitNames = {
+            apple: 'APPLE 🍎',
+            banana: 'BANANA 🍌',
+            grapes: 'GRAPES 🍇',
+            mango: 'MANGO 🥭'
+        };
+        let targetFruit;
+        let catchScore = 0;
+        let correctSound = new Audio("{{ url_for('static', filename='audio/yaayyy.mp3') }}");
+        let wrongSound = new Audio("{{ url_for('static', filename='audio/ohhno.mp3') }}");
+
+        function startFruitGame() {
+            pickNewFruit();
+        }
+
+        function pickNewFruit() {
+            targetFruit = fruits[Math.floor(Math.random() * fruits.length)];
+            document.getElementById('fruitInstruction').innerHTML = `Click on the ${fruitNames[targetFruit]}!`;
+            
+            document.querySelectorAll('.fruit-btn').forEach(btn => {
+                btn.classList.remove('caught');
+            });
+        }
+
+        // Find the Fruit Game
+        const findFruits = ['apple','banana','grapes'];
+        let targetFindFruit = null;
+        function startFindFruitGame(){ pickNewFindFruit(); }
+        function pickNewFindFruit(){
+            targetFindFruit = findFruits[Math.floor(Math.random()*findFruits.length)];
+            const names = { apple:'APPLE 🍎', banana:'BANANA 🍌', grapes:'GRAPES 🍇' };
+            document.getElementById('findFruitInstruction').innerHTML = `Tap the ${names[targetFindFruit]}!`;
+            document.getElementById('findFruitMsg').textContent = '';
+        }
+        function chooseFruit(name, el){
+            if(!targetFindFruit) return;
+            if(name === targetFindFruit){
+                document.getElementById('findFruitMsg').style.color = 'green';
+                document.getElementById('findFruitMsg').textContent = 'Great job! 🎉';
+                correctSound.play();
+                sendProgress({ inc_games: 1 });
+                setTimeout(pickNewFindFruit, 800);
+            } else {
+                document.getElementById('findFruitMsg').style.color = 'red';
+                document.getElementById('findFruitMsg').textContent = 'Try again!';
+                wrongSound.play();
+                el.style.animation = 'shake 0.5s';
+                setTimeout(()=> el.style.animation='', 500);
+            }
+        }
+
+        function catchFruit(fruit, element) {
+            if (fruit === targetFruit) {
+                element.classList.add('caught');
+                catchScore++;
+                document.getElementById('fruitScore').textContent = `Score: ${catchScore} ⭐`;
+                correctSound.play();
+                sendProgress({ inc_games: 1 });
+                setTimeout(pickNewFruit, 1000);
+            } else {
+                wrongSound.play();
+                element.style.animation = 'shake 0.5s';
+                setTimeout(() => {
+                    element.style.animation = '';
+                }, 500);
+            }
+        }
+
+        // Fruit Basket Game
+        let basketCount = 0;
+
+        function addToBasket(element) {
+            if (!element.classList.contains('picked')) {
+                element.classList.add('picked');
+                basketCount++;
+                
+                const basket = document.getElementById('basket');
+                basket.innerHTML += ' ' + element.textContent;
+                
+                document.getElementById('basketCount').textContent = `Fruits in basket: ${basketCount}`;
+                correctSound.play();
+                sendProgress({ inc_games: 1 });
+                
+                if (basketCount === 6) {
+                    setTimeout(() => {
+                        document.getElementById('basketCount').innerHTML = '🎉 Basket is FULL! Great job! 🎉';
+                        // Reset to allow more rounds
+                        document.querySelectorAll('.fruit-item').forEach(i => i.classList.remove('picked'));
+                        basketCount = 0;
+                        document.getElementById('basket').innerHTML = '🧺';
+                        setTimeout(() => {
+                            document.getElementById('basketCount').textContent = 'Fruits in basket: 0';
+                        }, 1500);
+                    }, 500);
+                }
+            }
+        }
+
+        function checkAnswers() {
+            let score = 0;
+            let correct = {
+                q1: "Banana",
+                q2: "Apple",
+                q3: "Grapes",
+                q4: "Mango"
+            };
+
+            for (let q in correct) {
+                let options = document.getElementsByName(q);
+                for (let i = 0; i < options.length; i++) {
+                    if (options[i].checked && options[i].value === correct[q]) {
+                        score++;
+                    }
+                }
+            }
+
+            let badge = document.getElementById("badge");
+            let badgeText = document.getElementById("badge-text");
+            let badgeImg = document.getElementById("badge-img");
+            let correctSound = document.getElementById("correct-sound");
+            let wrongSound = document.getElementById("wrong-sound");
+
+            if (score === 4) {
+                badgeText.innerText = "🏆 Gold Badge! Perfect Score!";
+                badgeImg.src = "{{ url_for('static', filename='images/badge.png') }}";
+                correctSound.play();
+            } else if (score === 3) {
+                badgeText.innerText = "🥈 Silver Badge! Great Job!";
+                badgeImg.src = "{{ url_for('static', filename='images/silver.png') }}";
+                correctSound.play();
+            } else if (score === 2) {
+                badgeText.innerText = "🥉 Bronze Badge! Keep Practicing!";
+                badgeImg.src = "{{ url_for('static', filename='images/bronze.png') }}";
+                correctSound.play();
+            } else {
+                badgeText.innerText = "❌ No Badge. Try Again!";
+                badgeImg.src = "{{ url_for('static', filename='images/oops.png') }}";
+                wrongSound.play();
+            }
+
+            badge.style.display = "block";
+        }
+    </script>
+</body>
+</html>

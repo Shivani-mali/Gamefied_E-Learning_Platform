@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fun Video Quiz for Kids</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-image: url("{{ url_for('static', filename='images/1.png') }}");
+            background-size: cover;
+            color: #333;
+        }
+
+        h2 {
+            color: #ff4081;
+            text-shadow: 2px 2px #fff;
+        }
+
+        iframe {
+            border: 5px solid #ffeb3b;
+            border-radius: 15px;
+            margin: 15px 0;
+        }
+
+        .question {
+            margin: 20px auto;
+            padding: 15px;
+            width: 60%;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            text-align: left;
+        }
+
+        /* Submit button container positioned at the bottom center */
+        .submit-container {
+            display: flex;
+            justify-content: center;
+            margin: 40px 0;
+            bottom: 20px;
+            position: relative;
+        }
+
+        button {
+            background: #ff4081;
+            color: white;
+            font-size: 18px;
+            padding: 10px 25px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #e91e63;
+        }
+
+        .badge {
+            display: none;
+            margin-top: 30px;
+            animation: pop 1s ease;
+        }
+
+        .badge img {
+            width: 150px;
+            animation: bounce 1.5s infinite;
+        }
+
+        @keyframes pop {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+    </style>
+</head>
+<body>
+
+
+    <h2>🎥 Watch & Learn!</h2>
+
+    <iframe width="560" height="315"
+        src="https://www.youtube.com/embed/Qyp9sC4ROcE?si=axkPKzAxVDgKgGjh"
+        title="YouTube video player" frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+    <h2>❓ Answer these fun questions</h2>
+
+    <div class="question">
+        <p>1. Which line goes up and down?</p>
+        <p>1. कौन सी रेखा ऊपर से नीचे जाती है?</p>
+        <input type="radio" name="q1" value="Sleeping line"> Sleeping line <br>
+        <input type="radio" name="q1" value="Standing line"> Standing line <br>
+        <input type="radio" name="q1" value="Curved line"> Curved line <br>
+    </div>
+
+    <div class="question">
+        <p>2. Which line goes side to side?</p>
+        <p>2. कौन सी रेखा एक ओर से दूसरी ओर जाती है?</p>
+        <input type="radio" name="q2" value="Sleeping line"> Sleeping line <br>
+        <input type="radio" name="q2" value="Standing line"> Standing line <br>
+        <input type="radio" name="q2" value="Zigzag line"> Zigzag line <br>
+    </div>
+
+    <div class="question">
+        <p>3. Which line looks like a slide?</p>
+        <p> कौन सी रेखा झूले जैसी लगती है?</p>
+        <input type="radio" name="q3" value="Slanting line"> Slanting line <br>
+        <input type="radio" name="q3" value="Curved line"> Curved line <br>
+        <input type="radio" name="q3" value="Zigzag line"> Zigzag line <br>
+    </div>
+
+    <div class="question">
+        <p>4. Which line looks like part of a circle?</p>
+        <p> कौन सी रेखा गोले के हिस्से जैसी होती है?</p>
+        <input type="radio" name="q4" value="Standing line"> Standing line <br>
+        <input type="radio" name="q4" value="Curved line"> Curved line <br>
+        <input type="radio" name="q4" value="Slanting line"> Slanting line <br>
+    </div>
+
+    <!-- Fixed submit button in center after questions -->
+    <div class="submit-container">
+        <button onclick="checkAnswers()">Submit ✅</button>
+    </div>
+
+    <div class="badge" id="badge">
+        <h3 id="badge-text"><span style="position:absolute;left:-9999px;">Badge result will appear here</span></h3>
+        <img id="badge-img" src="{{ url_for('static', filename='images/badge.png') }}" alt="Badge">
+    </div>
+
+    <audio id="correct-sound" src="{{ url_for('static', filename='audio/yaayyy.mp3') }}" preload="auto"></audio>
+    <audio id="wrong-sound" src="{{ url_for('static', filename='audio/ohhno.mp3') }}" preload="auto"></audio>
+
+    <script>
+        function checkAnswers() {
+            let score = 0;
+            let correct = {
+                q1: "Standing line",
+                q2: "Sleeping line",
+                q3: "Slanting line",
+                q4: "Curved line"
+            };
+
+            for (let q in correct) {
+                let options = document.getElementsByName(q);
+                for (let i = 0; i < options.length; i++) {
+                    if (options[i].checked && options[i].value === correct[q]) {
+                        score++;
+                    }
+                }
+            }
+
+            let badge = document.getElementById("badge");
+            let badgeText = document.getElementById("badge-text");
+            let badgeImg = document.getElementById("badge-img");
+            let correctSound = document.getElementById("correct-sound");
+            let wrongSound = document.getElementById("wrong-sound");
+
+            if (score === 4) {
+                badgeText.innerText = "🏆 Gold Badge! Perfect Score!";
+                badgeImg.src = "{{ url_for('static', filename='images/badge.png') }}";
+                correctSound.play();
+            } else if (score === 3) {
+                badgeText.innerText = "🥈 Silver Badge! Great Job!";
+                badgeImg.src = "{{ url_for('static', filename='images/silver.png') }}";
+                correctSound.play();
+            } else if (score === 2) {
+                badgeText.innerText = "🥉 Bronze Badge! Keep Practicing!";
+                badgeImg.src = "{{ url_for('static', filename='images/bronze.png') }}";
+                correctSound.play();
+            } else {
+                badgeText.innerText = "❌ No Badge. Try Again!";
+                badgeImg.src = "{{ url_for('static', filename='images/oops.png') }}";
+                wrongSound.play();
+            }
+
+            badge.style.display = "block";
+        }
+    </script>
+</body>
+</html>
