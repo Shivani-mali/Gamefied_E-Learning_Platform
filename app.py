@@ -281,6 +281,58 @@ def grammar():
 def quiz():
     return render_template('quiz.html')
 
+# -------------------- PRE-PRIMARY PROGRESS API --------------------
+@app.route('/preprimary/progress/update', methods=['POST'])
+def preprimary_progress_update():
+    if not session.get('child_logged_in'):
+        return jsonify({'error': 'not logged in'}), 401
+
+    child_email = session.get('child_email')
+    payload = request.get_json(silent=True) or {}
+    section = (payload.get('section') or '').strip().lower()
+    if not section:
+        return jsonify({'error': 'section required'}), 400
+
+    now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    set_ops = {f'preprimary_progress.{section}.last_updated': now}
+    inc_ops: Dict[str, int] = {}
+    max_ops: Dict[str, int] = {}
+    add_to_set: Dict[str, Any] = {}
+
+    if payload.get('video_watched'):
+        set_ops[f'preprimary_progress.{section}.video_watched'] = True
+        add_to_set['completed_works'] = {'$each': [f'Pre-Primary {section.title()} video watched']}
+
+    inc = int(payload.get('inc_games', 0) or 0)
+    if inc:
+        inc_ops[f'preprimary_progress.{section}.games_played'] = inc
+        add_to_set.setdefault('completed_works', {'$each': []})['$each'].append(
+            f'Pre-Primary {section.title()} game played'
+        )
+
+    if 'quiz_score' in payload:
+        try:
+            score = int(payload.get('quiz_score') or 0)
+        except Exception:
+            score = 0
+        max_ops[f'preprimary_progress.{section}.quiz_score'] = score
+        if score >= 3:
+            add_to_set.setdefault('completed_works', {'$each': []})['$each'].append(
+                f'Pre-Primary {section.title()} quiz passed ({score}/4)'
+            )
+
+    update_doc: Dict[str, Any] = {'$set': set_ops}
+    if inc_ops:
+        update_doc['$inc'] = inc_ops
+    if max_ops:
+        update_doc['$max'] = max_ops
+    if add_to_set:
+        update_doc['$addToSet'] = add_to_set
+
+    users.update_one({'email': child_email}, update_doc)
+    return jsonify({'ok': True})
+
 # -------------------- PARENT AREA --------------------
 @app.route('/parent_login', methods=['GET', 'POST'])
 def parent_login():
